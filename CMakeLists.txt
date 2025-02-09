@@ -14,7 +14,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # -----------------------------------------------------------------------------
 file(GLOB_RECURSE SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
+    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp"
 )
 
 # -----------------------------------------------------------------------------

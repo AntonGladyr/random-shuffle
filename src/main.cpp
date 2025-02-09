@@ -1,6 +1,11 @@
-#include <iostream>
+#ifndef MAIN_CPP
+#define MAIN_CPP
+
+#include "helpers/shuffle.hpp"
 
 int main()
 {
-    std::cout << "Hello World!" << std::endl;
+    ListShuffler::biased_shuffle();
 }
+
+#endif
