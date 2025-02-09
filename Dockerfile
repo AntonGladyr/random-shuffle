@@ -1,5 +1,4 @@
-# Build the application
-FROM ubuntu:22.04 AS builder
+FROM debian:bookworm-slim AS build
 
 # Install build tools and dependencies.
 RUN apt-get update && \
@@ -10,9 +9,10 @@ RUN apt-get update && \
 
 WORKDIR /src
 
+# Copy the build configuration first to take advantage of Docker’s cache.
+# (If you have additional dependency files, copy them here.)
 COPY CMakeLists.txt ./
 
-# Then copy the rest of the source code.
 COPY . .
 
 # Create a separate build directory and compile the application.
@@ -22,7 +22,7 @@ RUN mkdir build && cd build && \
 
 
 # Create the runtime image
-FROM ubuntu:22.04
+FROM debian:bookworm-slim
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -31,8 +31,8 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-# Copy the built binary from the builder stage.
-COPY --from=builder /src/build/shuffle.x /usr/local/bin/shuffle.x
+# Copy the built binary from the build stage.
+COPY --from=build /src/build/shuffle.x /usr/local/bin/shuffle.x
 
 RUN useradd -m appuser
 USER appuser
