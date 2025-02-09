@@ -15,8 +15,8 @@ COPY CMakeLists.txt ./
 
 COPY . .
 
-# Create a separate build directory and compile the application.
-RUN mkdir build && cd build && \
+# Create a separate bin directory and compile the application.
+RUN mkdir bin && cd bin && \
     cmake .. && \
     make -j"$(nproc)"
 
@@ -32,10 +32,10 @@ RUN apt-get update && \
 WORKDIR /app
 
 # Copy the built binary from the build stage.
-COPY --from=build /src/build/shuffle.x /usr/local/bin/shuffle.x
+COPY --from=build /src/bin/shuffle /usr/local/bin/shuffle
 
 RUN useradd -m appuser
 USER appuser
 
 
-ENTRYPOINT ["/usr/local/bin/shuffle.x"]
+ENTRYPOINT ["/usr/local/bin/shuffle"]
