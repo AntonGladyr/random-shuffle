@@ -10,7 +10,7 @@ int main()
     NumbersShuffler shuffler = NumbersShuffler();
 
     for (int i = 0; i <= 128; i++) {
-        std::vector<unsigned int> shuffledNumbers = shuffler.durstenfeldUnifromRandShuffle(4);
+        std::vector<unsigned int> shuffledNumbers = shuffler.fisherYatesShuffle(3);
         for (unsigned int num: shuffledNumbers) {
             std::cout << num;
         }

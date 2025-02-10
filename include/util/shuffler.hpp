@@ -5,10 +5,12 @@
 
 class NumbersShuffler {
     public:
+        std::vector<unsigned int> biasedNaiveShuffle(unsigned int length);
         std::vector<unsigned int> naiveShuffle(unsigned int length);
+        std::vector<unsigned int> biasedFisherYatesShuffle(unsigned int length);
         std::vector<unsigned int> fisherYatesShuffle(unsigned int length);
+        std::vector<unsigned int> biasedDurstenfeldShuffle(unsigned int length);
         std::vector<unsigned int> durstenfeldShuffle(unsigned int length);
-        std::vector<unsigned int> durstenfeldUnifromRandShuffle(unsigned int length);
 
         NumbersShuffler();
 };
