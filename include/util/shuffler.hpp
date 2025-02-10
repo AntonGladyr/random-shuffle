@@ -3,10 +3,11 @@
 
 #include <vector>
 
-class ListShuffler {
+class NumbersShuffler {
     public:
         std::vector<unsigned int> naiveShuffle(unsigned int length);
-        ListShuffler();
+        std::vector<unsigned int> fisherYatesShuffle(unsigned int length);
+        NumbersShuffler();
 };
 
-#endif
+#endif // LIST_SHUFFLER_HPP

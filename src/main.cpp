@@ -3,14 +3,14 @@
 
 #include <iostream>
 
-#include "helpers/shuffler.hpp"
+#include "util/shuffler.hpp"
 
 int main()
 {
-    ListShuffler shuffler = ListShuffler();
+    NumbersShuffler shuffler = NumbersShuffler();
 
     for (int i = 0; i <= 30; i++) {
-        std::vector<unsigned int> shuffledNumbers = shuffler.naiveShuffle(3);
+        std::vector<unsigned int> shuffledNumbers = shuffler.fisherYatesShuffle(3);
         for (unsigned int num: shuffledNumbers) {
             std::cout << num;
         }
@@ -18,4 +18,4 @@ int main()
     }
 }
 
-#endif
+#endif // MAIN_CPP
