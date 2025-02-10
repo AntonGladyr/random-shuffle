@@ -9,8 +9,8 @@ int main()
 {
     NumbersShuffler shuffler = NumbersShuffler();
 
-    for (int i = 0; i <= 30; i++) {
-        std::vector<unsigned int> shuffledNumbers = shuffler.fisherYatesShuffle(3);
+    for (int i = 0; i <= 128; i++) {
+        std::vector<unsigned int> shuffledNumbers = shuffler.durstenfeldUnifromRandShuffle(4);
         for (unsigned int num: shuffledNumbers) {
             std::cout << num;
         }
