@@ -11,6 +11,7 @@ class NumbersShuffler {
         std::vector<unsigned int> fisherYatesShuffle(unsigned int length);
         std::vector<unsigned int> biasedDurstenfeldShuffle(unsigned int length);
         std::vector<unsigned int> durstenfeldShuffle(unsigned int length);
+        std::vector<unsigned int> randomShuffle(unsigned int length);
 
         NumbersShuffler();
 };

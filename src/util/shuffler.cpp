@@ -5,6 +5,7 @@
 #include <ctime>
 #include <random>
 #include <numeric>
+#include <utility> 
 
 #include "util/shuffler.hpp"
 
@@ -53,8 +54,8 @@ std::vector<unsigned int> NumbersShuffler::biasedNaiveShuffle(unsigned int lengt
     std::iota(numbers.begin(), numbers.end(), 1);
 
     for (unsigned int i = 0; i < length; i++) {
-        unsigned int random_index = std::rand() % length;
-        std::swap(numbers[i], numbers[random_index]);
+        unsigned int randomIndex = std::rand() % length;
+        std::swap(numbers[i], numbers[randomIndex]);
     }
 
     return numbers;
@@ -83,11 +84,10 @@ std::vector<unsigned int> NumbersShuffler::naiveShuffle(unsigned int length) {
     std::iota(numbers.begin(), numbers.end(), 1);
 
     for (unsigned int i = 0; i < length; i++) {
-        // unsigned int random_index = std::rand() % length;
         // Generate a random integer
         std::uniform_int_distribution<> dis(0, i);
-        unsigned int random_index = dis(gen);
-        std::swap(numbers[i], numbers[random_index]);
+        unsigned int randomIndex = dis(gen);
+        std::swap(numbers[i], numbers[randomIndex]);
     }
 
     return numbers;
@@ -120,9 +120,9 @@ std::vector<unsigned int> NumbersShuffler::biasedFisherYatesShuffle(unsigned int
     // move the element at that index to the shuffled vector,
     // and remove it from the original vector.
     while (!numbers.empty()) {
-        unsigned int random_index = std::rand() % numbers.size();
-        shuffled.push_back(numbers[random_index]);
-        numbers.erase(numbers.begin() + random_index);
+        unsigned int randomIndex = std::rand() % numbers.size();
+        shuffled.push_back(numbers[randomIndex]);
+        numbers.erase(numbers.begin() + randomIndex);
     }
 
     return shuffled;
@@ -158,10 +158,10 @@ std::vector<unsigned int> NumbersShuffler::fisherYatesShuffle(unsigned int lengt
     // move the element at that index to the shuffled vector,
     // and remove it from the original vector.
     while (!numbers.empty()) {
-        std::uniform_int_distribution<> dis(0, numbers.size() - 1);
-        unsigned int random_index = dis(gen);
-        shuffled.push_back(numbers[random_index]);
-        numbers.erase(numbers.begin() + random_index);
+        std::uniform_int_distribution<> dis(0, length - 1);
+        unsigned int randomIndex = dis(gen);
+        shuffled.push_back(numbers[randomIndex]);
+        numbers.erase(numbers.begin() + randomIndex);
     }
 
     return shuffled;
@@ -186,10 +186,10 @@ std::vector<unsigned int> NumbersShuffler::biasedDurstenfeldShuffle(unsigned int
     // Loop from the last element down to the second element
     for (int i = numbers.size() - 1; i > 0; --i) {
         // Generate a random integer j such that 0 <= j <= i
-        unsigned int random_index = std::rand() % (i + 1);
+        unsigned int randomIndex = std::rand() % (i + 1);
 
-        // Swap elements at indices i and random_index
-        std::swap(numbers[i], numbers[random_index]);
+        // Swap elements at indices i and randomIndex
+        std::swap(numbers[i], numbers[randomIndex]);
     }
 
     return numbers;
@@ -221,10 +221,65 @@ std::vector<unsigned int> NumbersShuffler::durstenfeldShuffle(unsigned int lengt
     for (int i = numbers.size() - 1; i > 0; --i) {
         // Generate a random integer j such that 0 <= j <= i
         std::uniform_int_distribution<> dis(0, i);
-        unsigned int random_index = dis(gen);
+        unsigned int randomIndex = dis(gen);
 
-        // Swap elements at indices i and random_index
-        std::swap(numbers[i], numbers[random_index]);
+        // Swap elements at indices i and randomIndex
+        std::swap(numbers[i], numbers[randomIndex]);
+    }
+
+    return numbers;
+}
+
+
+/**
+ * @brief Shuffles a sequence of numbers using a sort-based random key pairing approach.
+ *
+ * This method creates a vector of numbers from 1 to length and assigns each number a random key.
+ * The random key for each element is generated using a uniform integer distribution, ensuring that
+ * each key is chosen uniformly from the range [0, length - 1]. The method then sorts a temporary vector
+ * of pairs (random key, element) based on the random keys. Finally, it reconstructs the original vector
+ * in the order determined by the sorted keys, resulting in a shuffled sequence.
+ *
+ * @note This approach involves sorting the temporary vector, which has a time complexity of O(n log n).
+ *       Although the randomness is generally good thanks to std::mt19937 and std::random_device, the method
+ *       may be less efficient than an in-place shuffle like the Fisher-Yates algorithm.
+ *
+ * @param length The number of elements to shuffle.
+ * @return A vector containing the numbers 1 to length in a pseudo-random order.
+ */
+std::vector<unsigned int> NumbersShuffler::randomShuffle(unsigned int length) {
+    // Create a random number generator seeded with a random device
+    std::random_device rd;
+    // Create a random number generator.
+    // Using a static thread_local engine avoids re-seeding on every function call.
+    static thread_local std::mt19937 gen(rd());
+
+    std::vector<unsigned int> numbers(length);
+    std::iota(numbers.begin(), numbers.end(), 1);
+
+    // Create a temporary vector of pairs: each pair contains a random key and an element.
+    std::vector<std::pair<unsigned int, unsigned int>> paired;
+    paired.reserve(length);
+
+    // Pair each element with a random key.
+    for (size_t i = 0; i < length; ++i) {
+        // Generate a random integer
+        std::uniform_int_distribution<> dis(0, length - 1);
+        unsigned int randomIndex = dis(gen);
+        paired.push_back(std::make_pair(randomIndex, numbers[i]));
+    }
+
+    // Sort the vector of pairs based on the random key.
+    std::sort(
+        paired.begin(),
+        paired.end(),
+        [](const std::pair<unsigned int, unsigned int>& a, const std::pair<unsigned int, unsigned int>& b) {
+            return a.first < b.first;
+        }
+    );
+
+    for (size_t i = 0; i < length; ++i) {
+        numbers[i] = paired[i].second;
     }
 
     return numbers;
