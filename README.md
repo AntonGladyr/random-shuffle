@@ -13,6 +13,6 @@ docker compose up
 
 ## TODO
 
-- Statistics
+- Statistics and distribution
 - MERGESHUFFLE
 - Make the app more interactive
