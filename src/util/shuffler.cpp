@@ -9,8 +9,17 @@
 
 #include "util/shuffler.hpp"
 
+
+bool NumbersShuffler::s_randSeeded = false;
+std::mt19937 NumbersShuffler::s_mtEngine{ std::random_device{}() };
+
+
 NumbersShuffler::NumbersShuffler() {
-    std::srand(std::time({})); // use current time as seed for random generator
+    // Seed std::rand() only once.
+    if (!s_randSeeded) {
+        std::srand(static_cast<unsigned int>(std::time(nullptr)));
+        s_randSeeded = true;
+    }
 }
 
 
@@ -74,18 +83,13 @@ std::vector<unsigned int> NumbersShuffler::biasedNaiveShuffle(unsigned int lengt
  * @return A vector of unsigned integers from 1 to `length` in a pseudo-random order.
  */
 std::vector<unsigned int> NumbersShuffler::naiveShuffle(unsigned int length) {
-    // Create a random number generator seeded with a random device
-    std::random_device rd;
-    // Using a static thread_local engine avoids re-seeding on every function call.
-    static thread_local std::mt19937 gen(rd());
-
     std::vector<unsigned int> numbers(length);
     std::iota(numbers.begin(), numbers.end(), 1);
 
     for (unsigned int i = 0; i < length; i++) {
         // Generate a random integer
         std::uniform_int_distribution<> dis(0, length - 1);
-        unsigned int randomIndex = dis(gen);
+        unsigned int randomIndex = dis(s_mtEngine);
         std::swap(numbers[i], numbers[randomIndex]);
     }
 
@@ -143,11 +147,6 @@ std::vector<unsigned int> NumbersShuffler::biasedFisherYatesShuffle(unsigned int
  * @return A vector containing the shuffled sequence.
  */
 std::vector<unsigned int> NumbersShuffler::fisherYatesShuffle(unsigned int length) {
-    // Create a random number generator seeded with a random device
-    std::random_device rd;
-    // Using a static thread_local engine avoids re-seeding on every function call.
-    static thread_local std::mt19937 gen(rd());
-
     std::vector<unsigned int> numbers(length);
     std::vector<unsigned int> shuffled;
     std::iota(numbers.begin(), numbers.end(), 1);
@@ -157,7 +156,7 @@ std::vector<unsigned int> NumbersShuffler::fisherYatesShuffle(unsigned int lengt
     // and remove it from the original vector.
     while (!numbers.empty()) {
         std::uniform_int_distribution<> dis(0, numbers.size() - 1);
-        unsigned int randomIndex = dis(gen);
+        unsigned int randomIndex = dis(s_mtEngine);
         shuffled.push_back(numbers[randomIndex]);
         numbers.erase(numbers.begin() + randomIndex);
     }
@@ -182,11 +181,9 @@ std::vector<unsigned int> NumbersShuffler::biasedDurstenfeldShuffle(unsigned int
     std::iota(numbers.begin(), numbers.end(), 1);
 
     // Loop from the last element down to the second element
-    for (int i = numbers.size() - 1; i > 0; --i) {
+    for (unsigned int i = numbers.size() - 1; i > 0; --i) {
         // Generate a random integer j such that 0 <= j <= i
         unsigned int randomIndex = std::rand() % (i + 1);
-
-        // Swap elements at indices i and randomIndex
         std::swap(numbers[i], numbers[randomIndex]);
     }
 
@@ -206,19 +203,14 @@ std::vector<unsigned int> NumbersShuffler::biasedDurstenfeldShuffle(unsigned int
  * @return A vector containing the shuffled sequence.
  */
 std::vector<unsigned int> NumbersShuffler::durstenfeldShuffle(unsigned int length) {
-    // Create a random number generator seeded with a random device
-    std::random_device rd;
-    // Using a static thread_local engine avoids re-seeding on every function call.
-    static thread_local std::mt19937 gen(rd());
-
     std::vector<unsigned int> numbers(length);
     std::iota(numbers.begin(), numbers.end(), 1);
 
     // Loop from the last element down to the second element
-    for (int i = numbers.size() - 1; i > 0; --i) {
+    for (unsigned int i = numbers.size() - 1; i > 0; --i) {
         // Generate a random integer j such that 0 <= j <= i
         std::uniform_int_distribution<> dis(0, i);
-        unsigned int randomIndex = dis(gen);
+        unsigned int randomIndex = dis(s_mtEngine);
 
         // Swap elements at indices i and randomIndex
         std::swap(numbers[i], numbers[randomIndex]);
@@ -245,14 +237,9 @@ std::vector<unsigned int> NumbersShuffler::durstenfeldShuffle(unsigned int lengt
  * @return A vector containing the numbers 1 to length in a pseudo-random order.
  */
 std::vector<unsigned int> NumbersShuffler::randomShuffle(unsigned int length) {
-    // Create a random number generator seeded with a random device
-    std::random_device rd;
-    // Using a static thread_local engine avoids re-seeding on every function call.
-    static thread_local std::mt19937 gen(rd());
-    std::uniform_int_distribution<unsigned int> dis(0, std::numeric_limits<unsigned int>::max());
-
     std::vector<unsigned int> numbers(length);
     std::iota(numbers.begin(), numbers.end(), 1);
+    std::uniform_int_distribution<unsigned int> dis(0, std::numeric_limits<unsigned int>::max());
 
     // Create a temporary vector of pairs: each pair contains a random key and an element.
     std::vector<std::pair<unsigned int, unsigned int>> paired;
@@ -260,7 +247,7 @@ std::vector<unsigned int> NumbersShuffler::randomShuffle(unsigned int length) {
 
     // Pair each element with a random key.
     for (unsigned int i = 0; i < length; ++i) {
-        paired.emplace_back(dis(gen), numbers[i]);
+        paired.emplace_back(dis(s_mtEngine), numbers[i]);
     }
 
     // Sort the vector of pairs based on the random key.
@@ -279,13 +266,13 @@ std::vector<unsigned int> NumbersShuffler::randomShuffle(unsigned int length) {
 }
 
 
-// Helper function for recursive merge shuffling.
-// For small subranges (fewer than 'threshold' elements), it falls back to a simple Fisher–Yates shuffle.
-static void mergeShuffleRec(
+// Recursive merge shuffling.
+// For small subranges (fewer than 'threshold' elements), it falls back to Durstenfeld shuffle.
+void NumbersShuffler::mergeShuffleRec(
     std::vector<unsigned int>& arr,
+    std::vector<unsigned int>& temp,
     unsigned int start,
-    unsigned int end,
-    std::mt19937 &gen
+    unsigned int end
 ) {
     unsigned int n = end - start;
 
@@ -294,12 +281,12 @@ static void mergeShuffleRec(
     }
 
     // Threshold to fall back to Durstenfeld algorithm.
-    const unsigned int threshold = 16;
+    const unsigned int threshold = 32;
     if (n < threshold) {
         for (unsigned int i = start; i < end; i++) {
             // Choose a random index in the range [i, end - 1]
             std::uniform_int_distribution<unsigned int> dis(i, end - 1);
-            unsigned int randomIndex = dis(gen);
+            unsigned int randomIndex = dis(s_mtEngine);
             std::swap(arr[i], arr[randomIndex]);
         }
 
@@ -308,46 +295,39 @@ static void mergeShuffleRec(
 
     // Recursively split the range into two halves and shuffle each half.
     unsigned int mid = start + n / 2;
-    mergeShuffleRec(arr, start, mid, gen);
-    mergeShuffleRec(arr, mid, end, gen);
-
-    // Merge the two shuffled halves.
-    std::vector<unsigned int> temp;
-    temp.reserve(n);
+    mergeShuffleRec(arr, temp, start, mid);
+    mergeShuffleRec(arr, temp, mid, end);
 
     unsigned int left = start;
     unsigned int right = mid;
+    unsigned int idx = start;  // temp index starts at 'start'.
 
     while (left < mid && right < end) {
         unsigned int leftCount = mid - left;
         unsigned int rightCount = end - right;
         std::uniform_int_distribution<unsigned int> dis(0, leftCount + rightCount - 1);
-        unsigned int pick = dis(gen);
+        unsigned int pick = dis(s_mtEngine);
 
         if (pick < leftCount) {
-            temp.push_back(arr[left]);
-            left++;
+            temp[idx++] = arr[left++];
         } else {
-            temp.push_back(arr[right]);
-            right++;
+            temp[idx++] = arr[right++];
         }
     }
 
     // Append any remaining elements from the left or right half.
 
     while (left < mid) {
-        temp.push_back(arr[left]);
-        left++;
+        temp[idx++] = arr[left++];
     }
 
     while (right < end) {
-        temp.push_back(arr[right]);
-        right++;
+        temp[idx++] = arr[right++];
     }
 
     // The merged (shuffled) result.
-    for (unsigned int i = 0; i < n; i++) {
-        arr[start + i] = temp[i];
+    for (unsigned int i = start; i < end; i++) {
+        arr[i] = temp[i];
     }
 }
 
@@ -362,15 +342,14 @@ static void mergeShuffleRec(
  * @return A vector containing the numbers 1 to length in a pseudo-random order.
  */
 std::vector<unsigned int> NumbersShuffler::mergeShuffle(unsigned int length) {
-    // Create a random number generator seeded with a random device.
-    std::random_device rd;
-    // Using a static thread_local engine avoids re-seeding on every function call.
-    static thread_local std::mt19937 gen(rd());
-
     std::vector<unsigned int> numbers(length);
     std::iota(numbers.begin(), numbers.end(), 1);
 
-    mergeShuffleRec(numbers, 0, numbers.size(), gen);
+    // Allocate the temporary vector once.
+    std::vector<unsigned int> temp(length);
+
+    mergeShuffleRec(numbers, temp, 0, numbers.size());
+
     return numbers;
 }
 
