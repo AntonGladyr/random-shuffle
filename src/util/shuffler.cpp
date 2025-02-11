@@ -158,7 +158,7 @@ std::vector<unsigned int> NumbersShuffler::fisherYatesShuffle(unsigned int lengt
     // move the element at that index to the shuffled vector,
     // and remove it from the original vector.
     while (!numbers.empty()) {
-        std::uniform_int_distribution<> dis(0, length - 1);
+        std::uniform_int_distribution<> dis(0, numbers.size() - 1);
         unsigned int randomIndex = dis(gen);
         shuffled.push_back(numbers[randomIndex]);
         numbers.erase(numbers.begin() + randomIndex);
