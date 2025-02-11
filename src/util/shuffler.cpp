@@ -380,7 +380,7 @@ void NumbersShuffler::parallelMergeShuffleRec(
     unsigned int mid = start + n / 2;
 
     // Spawn tasks for the two halves (only create tasks if the subproblem is large enough)
-    #pragma omp task shared(arr, temp) if(n > threshold * 2048)
+    #pragma omp task shared(arr, temp) if(n > threshold * 4)
     {
         parallelMergeShuffleRec(arr, temp, start, mid);
     }
