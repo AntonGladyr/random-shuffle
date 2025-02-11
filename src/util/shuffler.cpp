@@ -85,7 +85,7 @@ std::vector<unsigned int> NumbersShuffler::naiveShuffle(unsigned int length) {
 
     for (unsigned int i = 0; i < length; i++) {
         // Generate a random integer
-        std::uniform_int_distribution<> dis(0, i);
+        std::uniform_int_distribution<> dis(0, length - 1);
         unsigned int randomIndex = dis(gen);
         std::swap(numbers[i], numbers[randomIndex]);
     }
