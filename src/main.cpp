@@ -89,6 +89,9 @@ int main()
     testShuffleFunction(
         shuffler, &NumbersShuffler::randomShuffle, "randomShuffle", permutationLength, iterations
     );
+    testShuffleFunction(
+        shuffler, &NumbersShuffler::mergeShuffle, "mergeShuffle", permutationLength, iterations
+    );
 
     return 0;
 }

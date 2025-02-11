@@ -1,6 +1,7 @@
 #ifndef NUMBERS_SHUFFLER_HPP
 #define NUMBERS_SHUFFLER_HPP
 
+#include <random>
 #include <vector>
 
 class NumbersShuffler {
@@ -12,6 +13,7 @@ class NumbersShuffler {
         std::vector<unsigned int> biasedDurstenfeldShuffle(unsigned int length);
         std::vector<unsigned int> durstenfeldShuffle(unsigned int length);
         std::vector<unsigned int> randomShuffle(unsigned int length);
+        std::vector<unsigned int> mergeShuffle(unsigned int length);
 
         NumbersShuffler();
 };
