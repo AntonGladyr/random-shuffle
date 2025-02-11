@@ -249,6 +249,7 @@ std::vector<unsigned int> NumbersShuffler::randomShuffle(unsigned int length) {
     std::random_device rd;
     // Using a static thread_local engine avoids re-seeding on every function call.
     static thread_local std::mt19937 gen(rd());
+    std::uniform_int_distribution<unsigned int> dis(0, std::numeric_limits<unsigned int>::max());
 
     std::vector<unsigned int> numbers(length);
     std::iota(numbers.begin(), numbers.end(), 1);
@@ -258,23 +259,19 @@ std::vector<unsigned int> NumbersShuffler::randomShuffle(unsigned int length) {
     paired.reserve(length);
 
     // Pair each element with a random key.
-    for (size_t i = 0; i < length; ++i) {
-        // Generate a random integer
-        std::uniform_int_distribution<> dis(0, length - 1);
-        unsigned int randomIndex = dis(gen);
-        paired.push_back(std::make_pair(randomIndex, numbers[i]));
+    for (unsigned int i = 0; i < length; ++i) {
+        paired.emplace_back(dis(gen), numbers[i]);
     }
 
     // Sort the vector of pairs based on the random key.
-    std::sort(
-        paired.begin(),
-        paired.end(),
+    // Use a stable sort to preserve the random ordering of equal keys.
+    std::stable_sort(paired.begin(), paired.end(),
         [](const std::pair<unsigned int, unsigned int>& a, const std::pair<unsigned int, unsigned int>& b) {
             return a.first < b.first;
         }
     );
 
-    for (size_t i = 0; i < length; ++i) {
+    for (unsigned int i = 0; i < length; ++i) {
         numbers[i] = paired[i].second;
     }
 
