@@ -10,11 +10,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # -----------------------------------------------------------------------------
+# Find Required Packages
+# -----------------------------------------------------------------------------
+find_package(OpenMP REQUIRED)
+
+# -----------------------------------------------------------------------------
 # Source Files
 # -----------------------------------------------------------------------------
 file(GLOB_RECURSE SOURCES
     "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp"
 )
 
 # -----------------------------------------------------------------------------
@@ -25,6 +29,8 @@ add_executable(shuffle ${SOURCES})
 target_include_directories(shuffle PRIVATE 
     ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
+
+target_link_libraries(shuffle PRIVATE OpenMP::OpenMP_CXX)
 
 # -----------------------------------------------------------------------------
 # Compiler Options

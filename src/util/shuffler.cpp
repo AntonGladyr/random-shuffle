@@ -3,8 +3,10 @@
 
 #include <algorithm>
 #include <ctime>
-#include <random>
+#include <limits>
 #include <numeric>
+#include <omp.h>
+#include <random>
 #include <utility> 
 
 #include "util/shuffler.hpp"
@@ -325,10 +327,7 @@ void NumbersShuffler::mergeShuffleRec(
         temp[idx++] = arr[right++];
     }
 
-    // The merged (shuffled) result.
-    for (unsigned int i = start; i < end; i++) {
-        arr[i] = temp[i];
-    }
+    std::copy(temp.begin() + start, temp.begin() + end, arr.begin() + start);
 }
 
 /**
@@ -349,6 +348,93 @@ std::vector<unsigned int> NumbersShuffler::mergeShuffle(unsigned int length) {
     std::vector<unsigned int> temp(length);
 
     mergeShuffleRec(numbers, temp, 0, numbers.size());
+
+    return numbers;
+}
+
+
+void NumbersShuffler::parallelMergeShuffleRec(
+    std::vector<unsigned int>& arr,
+    std::vector<unsigned int>& temp,
+    unsigned int start,
+    unsigned int end
+) {
+    unsigned int n = end - start;
+    if (n <= 1) return;
+    
+    // Threshold to fall back to Durstenfeld shuffle.
+    const unsigned int threshold = 32;
+
+    if (n < threshold) {
+        for (unsigned int i = start; i < end; i++) {
+            // Choose a random index in the range [i, end - 1]
+            std::uniform_int_distribution<unsigned int> dis(i, end - 1);
+            unsigned int randomIndex = dis(getThreadLocalEngine());
+            std::swap(arr[i], arr[randomIndex]);
+        }
+
+        return;
+    }
+
+    // Recursively split the range into two halves and shuffle each half.
+    unsigned int mid = start + n / 2;
+
+    // Spawn tasks for the two halves (only create tasks if the subproblem is large enough)
+    #pragma omp task shared(arr, temp) if(n > threshold * 2048)
+    {
+        parallelMergeShuffleRec(arr, temp, start, mid);
+    }
+
+
+    parallelMergeShuffleRec(arr, temp, mid, end);
+    #pragma omp taskwait
+
+    // Merge
+    unsigned int left = start;
+    unsigned int right = mid;
+    unsigned int idx = start;  // temp index starts at 'start'.
+
+    while (left < mid && right < end) {
+        unsigned int leftCount = mid - left;
+        unsigned int rightCount = end - right;
+        std::uniform_int_distribution<unsigned int> dis(0, leftCount + rightCount - 1);
+        unsigned int pick = dis(getThreadLocalEngine());
+
+        if (pick < leftCount) {
+            temp[idx++] = arr[left++];
+        } else {
+            temp[idx++] = arr[right++];
+        }
+    }
+
+    // Append any remaining elements from the left or right half.
+
+    while (left < mid) {
+        temp[idx++] = arr[left++];
+    }
+
+    while (right < end) {
+        temp[idx++] = arr[right++];
+    }
+
+    std::copy(temp.begin() + start, temp.begin() + end, arr.begin() + start);
+}
+
+
+std::vector<unsigned int> NumbersShuffler::parallelMergeShuffle(unsigned int length) {
+    std::vector<unsigned int> numbers(length);
+    std::iota(numbers.begin(), numbers.end(), 1);
+
+    std::vector<unsigned int> temp(length);
+
+    // Parallel region
+    #pragma omp parallel
+    {
+        #pragma omp single nowait
+        {
+            parallelMergeShuffleRec(numbers, temp, 0, numbers.size());
+        }
+    }
 
     return numbers;
 }

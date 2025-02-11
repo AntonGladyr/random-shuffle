@@ -1,12 +1,12 @@
 #ifndef MAIN_CPP
 #define MAIN_CPP
 
-#include <iostream>
-#include <iomanip>
-#include <vector>
-#include <string>
-#include <cmath>
 #include <chrono>
+#include <cmath>
+#include <iomanip>
+#include <iostream>
+#include <string>
+#include <vector>
 
 
 #include "util/shuffler.hpp"
@@ -146,6 +146,9 @@ int main()
     );
     testShuffleFunction(
         shuffler, &NumbersShuffler::mergeShuffle, "mergeShuffle", permutationLength, iterations
+    );
+    testShuffleFunction(
+        shuffler, &NumbersShuffler::parallelMergeShuffle, "parallelMergeShuffle", permutationLength, iterations
     );
 
     return 0;
