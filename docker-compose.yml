@@ -3,4 +3,4 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: [ "--mode", "stats", "--n", "512", "--algorithm", "parallelMergeShuffle", "--iterations", "10000000" ]
+    command: [ "--mode", "stats", "--n", "512", "--algorithm", "durstenfeldShuffle", "--iterations", "10000000" ]

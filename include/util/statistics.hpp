@@ -4,10 +4,9 @@
 #include <vector>
 #include <string>
 
+#include "util/helpers.hpp"
 #include "util/shuffler.hpp"
 
-// A pointer‐to‐member function type for a NumbersShuffler shuffle method.
-using ShuffleFunc = std::vector<unsigned int> (NumbersShuffler::*)(unsigned int) const;
 
 /**
  * @brief Runs the given shuffle method many times and collects per-position frequency statistics.
