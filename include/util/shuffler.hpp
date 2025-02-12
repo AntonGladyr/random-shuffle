@@ -6,15 +6,15 @@
 
 class NumbersShuffler {
     public:
-        std::vector<unsigned int> biasedNaiveShuffle(unsigned int length);
-        std::vector<unsigned int> naiveShuffle(unsigned int length);
-        std::vector<unsigned int> biasedFisherYatesShuffle(unsigned int length);
-        std::vector<unsigned int> fisherYatesShuffle(unsigned int length);
-        std::vector<unsigned int> biasedDurstenfeldShuffle(unsigned int length);
-        std::vector<unsigned int> durstenfeldShuffle(unsigned int length);
-        std::vector<unsigned int> randomShuffle(unsigned int length);
-        std::vector<unsigned int> mergeShuffle(unsigned int length);
-        std::vector<unsigned int> parallelMergeShuffle(unsigned int length);
+        std::vector<unsigned int> biasedNaiveShuffle(unsigned int length) const;
+        std::vector<unsigned int> naiveShuffle(unsigned int length) const;
+        std::vector<unsigned int> biasedFisherYatesShuffle(unsigned int length) const;
+        std::vector<unsigned int> fisherYatesShuffle(unsigned int length) const;
+        std::vector<unsigned int> biasedDurstenfeldShuffle(unsigned int length) const;
+        std::vector<unsigned int> durstenfeldShuffle(unsigned int length) const;
+        std::vector<unsigned int> randomShuffle(unsigned int length) const;
+        std::vector<unsigned int> mergeShuffle(unsigned int length) const;
+        std::vector<unsigned int> parallelMergeShuffle(unsigned int length) const;
 
         NumbersShuffler();
     private:

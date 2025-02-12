@@ -12,7 +12,7 @@
 #include "util/shuffler.hpp"
 
 // A type alias for a pointer-to-member function
-using ShuffleFunc = std::vector<unsigned int> (NumbersShuffler::*)(unsigned int);
+using ShuffleFunc = std::vector<unsigned int> (NumbersShuffler::*)(unsigned int) const;
 
 /**
  * @brief Runs the given shuffle method many times and collects per-position frequency statistics.

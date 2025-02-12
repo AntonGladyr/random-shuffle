@@ -60,7 +60,7 @@ NumbersShuffler::NumbersShuffler() {
  * @param length The number of elements in the sequence to be shuffled.
  * @return A vector of unsigned integers from 1 to `length` in a pseudo-random order.
  */
-std::vector<unsigned int> NumbersShuffler::biasedNaiveShuffle(unsigned int length) {
+std::vector<unsigned int> NumbersShuffler::biasedNaiveShuffle(unsigned int length) const {
     std::vector<unsigned int> numbers(length);
     std::iota(numbers.begin(), numbers.end(), 1);
 
@@ -84,7 +84,7 @@ std::vector<unsigned int> NumbersShuffler::biasedNaiveShuffle(unsigned int lengt
  * @param length The number of elements in the sequence to be shuffled.
  * @return A vector of unsigned integers from 1 to `length` in a pseudo-random order.
  */
-std::vector<unsigned int> NumbersShuffler::naiveShuffle(unsigned int length) {
+std::vector<unsigned int> NumbersShuffler::naiveShuffle(unsigned int length) const {
     std::vector<unsigned int> numbers(length);
     std::iota(numbers.begin(), numbers.end(), 1);
 
@@ -116,7 +116,7 @@ std::vector<unsigned int> NumbersShuffler::naiveShuffle(unsigned int length) {
  * @param length The number of elements to shuffle.
  * @return A vector containing the shuffled sequence.
  */
-std::vector<unsigned int> NumbersShuffler::biasedFisherYatesShuffle(unsigned int length) {
+std::vector<unsigned int> NumbersShuffler::biasedFisherYatesShuffle(unsigned int length) const {
     std::vector<unsigned int> numbers(length);
     std::vector<unsigned int> shuffled;
     std::iota(numbers.begin(), numbers.end(), 1);
@@ -148,7 +148,7 @@ std::vector<unsigned int> NumbersShuffler::biasedFisherYatesShuffle(unsigned int
  * @param length The number of elements to shuffle.
  * @return A vector containing the shuffled sequence.
  */
-std::vector<unsigned int> NumbersShuffler::fisherYatesShuffle(unsigned int length) {
+std::vector<unsigned int> NumbersShuffler::fisherYatesShuffle(unsigned int length) const {
     std::vector<unsigned int> numbers(length);
     std::vector<unsigned int> shuffled;
     std::iota(numbers.begin(), numbers.end(), 1);
@@ -178,7 +178,7 @@ std::vector<unsigned int> NumbersShuffler::fisherYatesShuffle(unsigned int lengt
  * @param length The number of elements to shuffle.
  * @return A vector containing the shuffled sequence.
  */
-std::vector<unsigned int> NumbersShuffler::biasedDurstenfeldShuffle(unsigned int length) {
+std::vector<unsigned int> NumbersShuffler::biasedDurstenfeldShuffle(unsigned int length) const {
     std::vector<unsigned int> numbers(length);
     std::iota(numbers.begin(), numbers.end(), 1);
 
@@ -204,7 +204,7 @@ std::vector<unsigned int> NumbersShuffler::biasedDurstenfeldShuffle(unsigned int
  * @param length The number of elements to shuffle.
  * @return A vector containing the shuffled sequence.
  */
-std::vector<unsigned int> NumbersShuffler::durstenfeldShuffle(unsigned int length) {
+std::vector<unsigned int> NumbersShuffler::durstenfeldShuffle(unsigned int length) const {
     std::vector<unsigned int> numbers(length);
     std::iota(numbers.begin(), numbers.end(), 1);
 
@@ -238,7 +238,7 @@ std::vector<unsigned int> NumbersShuffler::durstenfeldShuffle(unsigned int lengt
  * @param length The number of elements to shuffle.
  * @return A vector containing the numbers 1 to length in a pseudo-random order.
  */
-std::vector<unsigned int> NumbersShuffler::randomShuffle(unsigned int length) {
+std::vector<unsigned int> NumbersShuffler::randomShuffle(unsigned int length) const {
     std::vector<unsigned int> numbers(length);
     std::iota(numbers.begin(), numbers.end(), 1);
     std::uniform_int_distribution<unsigned int> dis(0, std::numeric_limits<unsigned int>::max());
@@ -340,7 +340,7 @@ void NumbersShuffler::mergeShuffleRec(
  * @param length The number of elements to shuffle.
  * @return A vector containing the numbers 1 to length in a pseudo-random order.
  */
-std::vector<unsigned int> NumbersShuffler::mergeShuffle(unsigned int length) {
+std::vector<unsigned int> NumbersShuffler::mergeShuffle(unsigned int length) const {
     std::vector<unsigned int> numbers(length);
     std::iota(numbers.begin(), numbers.end(), 1);
 
@@ -421,7 +421,7 @@ void NumbersShuffler::parallelMergeShuffleRec(
 }
 
 
-std::vector<unsigned int> NumbersShuffler::parallelMergeShuffle(unsigned int length) {
+std::vector<unsigned int> NumbersShuffler::parallelMergeShuffle(unsigned int length) const {
     std::vector<unsigned int> numbers(length);
     std::iota(numbers.begin(), numbers.end(), 1);
 
